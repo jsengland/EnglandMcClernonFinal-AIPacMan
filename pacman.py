@@ -8,7 +8,7 @@ Exercises
 4. Make the ghosts faster/slower.
 5. Make the ghosts smarter.
 """
-
+import keyboard
 from random import choice
 from turtle import *
 
@@ -50,6 +50,17 @@ tiles = [
 ]
 # fmt: on
 
+moveForwardStack = []
+backtrackList = []
+lastTileVisted = []
+
+
+#Send fake keys to system
+def fakeKeys():
+    #Move up section
+    keyboard.press_and_release('left')
+    pass
+
 
 def square(x, y):
     """Draw square using path at (x, y)."""
@@ -76,7 +87,7 @@ def offset(point):
 def valid(point):
     """Return True if point is valid in tiles."""
     index = offset(point)
-
+    print("printing index",index)
     if tiles[index] == 0:
         return False
 
@@ -120,6 +131,7 @@ def world():
                 path.up()
                 path.goto(x + 10, y + 10)
                 path.dot(2, 'white')
+
 
 
 def move():
@@ -168,61 +180,97 @@ def move():
     for point, course in ghosts:
         if abs(pacman - point) < 20:
             return
+    #fakeKeys()
+    ontimer(move, 50)
 
-    ontimer(move, 100)
+# def moveGHOSTS():
+#     """Move pacman and all ghosts."""
+    
+
+#     #clear()
+
+    
+
+#     for point, course in ghosts:
+#         if valid(point + course):
+#             point.move(course)
+#         else:
+#             options = [
+#                 vector(5, 0),
+#                 vector(-5, 0),
+#                 vector(0, 5),
+#                 vector(0, -5),
+#             ]
+#             plan = choice(options)
+#             course.x = plan.x
+#             course.y = plan.y
+
+#         up()
+#         goto(point.x + 10, point.y + 10)
+#         dot(20, 'red')
+
+#     #update()
+
+#     # for point, course in ghosts:
+#     #     if abs(pacman - point) < 20:
+#     #         return
+
+#     #ontimer(moveGHOSTS, 100)
 
 #TODO - only pacman calls this, the ghosts don't
-def movePACMAN():
-    """Move pacman and all ghosts."""
-    writer.undo()
-    writer.write(state['score'])
+# def movePACMAN():
+#     """Move pacman and all ghosts."""
+#     writer.undo()
+#     writer.write(state['score'])
 
-    clear()
+#     clear()
+    
+#     #PACMAN MOVEMENT
+#     if validPACMAN(pacman + aim):
+#         pacman.move(aim)
 
-    if validPACMAN(pacman + aim):
-        pacman.move(aim)
+#     index = offset(pacman)
 
-    index = offset(pacman)
+#     if tiles[index] == 1:
+#         tiles[index] = 2
+#         state['score'] += 1
+#         x = (index % 20) * 20 - 200
+#         y = 180 - (index // 20) * 20
+#         square(x, y)
 
-    if tiles[index] == 1:
-        tiles[index] = 2
-        state['score'] += 1
-        x = (index % 20) * 20 - 200
-        y = 180 - (index // 20) * 20
-        square(x, y)
+#     up()
+#     goto(pacman.x + 10, pacman.y + 10)
+#     dot(20, 'yellow')
 
-    up()
-    goto(pacman.x + 10, pacman.y + 10)
-    dot(20, 'yellow')
+#     # for point, course in ghosts:
+#     #     if valid(point + course):
+#     #         point.move(course)
+#     #     else:
+#     #         options = [
+#     #             vector(5, 0),
+#     #             vector(-5, 0),
+#     #             vector(0, 5),
+#     #             vector(0, -5),
+#     #         ]
+#     #         plan = choice(options)
+#     #         course.x = plan.x
+#     #         course.y = plan.y
 
-    for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
-        else:
-            options = [
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
-            ]
-            plan = choice(options)
-            course.x = plan.x
-            course.y = plan.y
+#     #     up()
+#     #     goto(point.x + 10, point.y + 10)
+#     #     dot(20, 'red')
 
-        up()
-        goto(point.x + 10, point.y + 10)
-        dot(20, 'red')
+#     moveGHOSTS()
+#     update()
 
-    update()
+#     # #TODO - FINISH THIS, FIGURE OUT HOW TO SET TILE BACK TO 1 OR 2
+#     # for point, course in ghosts:
+#     #     index = offset(point)
+#     #     tiles[index] = 3
+#     #     if abs(pacman - point) < 20:
+#     #         return
 
-    #TODO - FINISH THIS, FIGURE OUT HOW TO SET TILE BACK TO 1 OR 2
-    for point, course in ghosts:
-        index = offset(point)
-        tiles[index] = 3
-        if abs(pacman - point) < 20:
-            return
-
-    ontimer(move, 100)
+#     ontimer(movePACMAN, 50)
 
 #TODO - changed valid in this func
 def change(x, y):
@@ -245,8 +293,39 @@ onkey(lambda: change(0, 5), 'Up')
 onkey(lambda: change(0, -5), 'Down')
 world()
 #move()
-movePACMAN()
+move()
 done()
 
 #moves left by itself
 #change(-5, 0)
+
+def getMazeUP(locationIndex):
+    if(locationIndex >= 20):
+        locationIndex -= 20
+        if tiles[locationIndex] != 0:
+            return(locationIndex)
+    return(-1)
+
+
+def getMazeDOWN(locationIndex):
+    if(locationIndex >= 20):
+        locationIndex -= 20
+        if tiles[locationIndex] != 0:
+            return(locationIndex)
+    return(-1)
+
+
+def getMazeLEFT(locationIndex):
+    if(locationIndex >= 20):
+        locationIndex -= 20
+        if tiles[locationIndex] != 0:
+            return(locationIndex)
+    return(-1)
+
+
+def getMazeRIGHT(locationIndex):
+    if(locationIndex >= 20):
+        locationIndex -= 20
+        if tiles[locationIndex] != 0:
+            return(locationIndex)
+    return(-1)
