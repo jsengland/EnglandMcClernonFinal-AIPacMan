@@ -306,7 +306,7 @@ def getMazeUP(locationIndex):
             return(locationIndex)
     return(-1)
 
-
+#TODO - get this correct
 def getMazeDOWN(locationIndex):
     if(locationIndex >= 20):
         locationIndex -= 20
@@ -314,7 +314,7 @@ def getMazeDOWN(locationIndex):
             return(locationIndex)
     return(-1)
 
-
+#TODO - get this correct
 def getMazeLEFT(locationIndex):
     if(locationIndex >= 20):
         locationIndex -= 20
@@ -322,7 +322,7 @@ def getMazeLEFT(locationIndex):
             return(locationIndex)
     return(-1)
 
-
+#TODO - get this correct
 def getMazeRIGHT(locationIndex):
     if(locationIndex >= 20):
         locationIndex -= 20
