@@ -53,6 +53,49 @@ moveForwardStack = []
 backtrackList = []
 lastTileVisted = []
 
+def getMazeUP(locationIndex):
+    if(locationIndex >= 20):
+        locationIndex -= 20
+        if tiles[locationIndex] != 0:
+            return(locationIndex)
+    return(-1)
+
+#TODO - get this correct
+def getMazeDOWN(locationIndex):
+    if(locationIndex <= 379):
+        locationIndex += 20
+        if tiles[locationIndex] != 0:
+            return(locationIndex)
+    return(-1)
+
+#TODO - get this correct
+def getMazeLEFT(locationIndex):
+    if(locationIndex %20 != 0 and locationIndex != 0):
+        locationIndex -= 1
+        if tiles[locationIndex] != 0:
+            return(locationIndex)
+    return(-1)
+
+#TODO - get this correct
+def getMazeRIGHT(locationIndex):
+    if(locationIndex % 20 != 19 and locationIndex!= 19):
+        locationIndex -= 1
+        if tiles[locationIndex] != 0:
+            return(locationIndex)
+    return(-1)
+
+def getAdjacentTiles(currentLocation, lastLocation):
+    if(getMazeUP(currentLocation) != lastLocation):
+        moveForwardStack.append(getMazeUP(currentLocation))
+
+    if(getMazeLEFT(currentLocation != lastLocation)):
+        moveForwardStack.append(getMazeLEFT(currentLocation))
+
+    if(getMazeRIGHT(currentLocation) != lastLocation):
+        moveForwardStack.append(getMazeRIGHT(currentLocation))
+
+    if(getMazeDOWN(currentLocation != lastLocation)):
+        moveForwardStack.append(getMazeDOWN(currentLocation))
 
 #Send fake keys to system
 def fakeKeys():
@@ -86,7 +129,7 @@ def offset(point):
 def valid(point):
     """Return True if point is valid in tiles."""
     index = offset(point)
-    print("printing index",index)
+    #print("printing index",index)
     if tiles[index] == 0:
         return False
 
@@ -134,17 +177,22 @@ def world():
 
 
 def move():
+    print(moveForwardStack)
     """Move pacman and all ghosts."""
     writer.undo()
     writer.write(state['score'])
 
     clear()
-
+    index = offset(pacman)
+    lastTile = index
+    lastTileVisted.append(lastTile)
+    #TODO limit append to one per tile 
     if valid(pacman + aim):
         pacman.move(aim)
 
     index = offset(pacman)
-
+    #timer??, for loop?? look at length of stack
+    getAdjacentTiles(index, lastTile)
     if tiles[index] == 1:
         tiles[index] = 2
         state['score'] += 1
@@ -298,49 +346,7 @@ done()
 #moves left by itself
 #change(-5, 0)
 
-def getMazeUP(locationIndex):
-    if(locationIndex >= 20):
-        locationIndex -= 20
-        if tiles[locationIndex] != 0:
-            return(locationIndex)
-    return(-1)
 
-#TODO - get this correct
-def getMazeDOWN(locationIndex):
-    if(locationIndex <= 379):
-        locationIndex += 20
-        if tiles[locationIndex] != 0:
-            return(locationIndex)
-    return(-1)
-
-#TODO - get this correct
-def getMazeLEFT(locationIndex):
-    if(locationIndex %20 != 0 and locationIndex != 0):
-        locationIndex -= 1
-        if tiles[locationIndex] != 0:
-            return(locationIndex)
-    return(-1)
-
-#TODO - get this correct
-def getMazeRIGHT(locationIndex):
-    if(locationIndex % 20 != 19 and locationIndex!= 19):
-        locationIndex -= 1
-        if tiles[locationIndex] != 0:
-            return(locationIndex)
-    return(-1)
-
-def getAdjacentTiles(currentLocation, lastLocation):
-    if(getMazeUP(currentLocation) != lastLocation):
-        moveForwardStack.append(getMazeUP(currentLocation))
-
-    if(getMazeLEFT(currentLocation != lastLocation)):
-        moveForwardStack.append(getMazeLEFT(currentLocation))
-
-    if(getMazeRIGHT(currentLocation) != lastLocation):
-        moveForwardStack.append(getMazeRIGHT(currentLocation))
-
-    if(getMazeDOWN(currentLocation != lastLocation)):
-        moveForwardStack.append(getMazeDOWN(currentLocation))
     
 
 
