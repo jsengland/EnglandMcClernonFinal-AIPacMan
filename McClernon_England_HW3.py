@@ -87,14 +87,14 @@ def getMazeRIGHT(locationIndex):
 def getAdjacentTiles(currentLocation, lastLocation):
     if(getMazeUP(currentLocation) != lastLocation and getMazeUP(currentLocation) != -1):
         if(len(moveForwardStack) > 4):
-            found = False
+            foundUP = False
             for i in range(1,5):
                 i = i*-1
                 if(moveForwardStack[i] == getMazeUP(currentLocation)):
-                    found = True
+                    foundUP = True
                     break
             
-            if(found == False):
+            if(foundUP == False):
                 moveForwardStack.append(getMazeUP(currentLocation))
                 
                 
@@ -115,41 +115,99 @@ def getAdjacentTiles(currentLocation, lastLocation):
         else:
             moveForwardStack.append(currentLocation)
 #############################################################################################
-        if(getMazeLEFT(currentLocation) != lastLocation and getMazeLEFT(currentLocation) != -1):
-            if(len(moveForwardStack) > 1):
-                if(moveForwardStack[len(moveForwardStack)-1] != getMazeUP(currentLocation)):
+#LEFT
+    if(getMazeLEFT(currentLocation) != lastLocation and getMazeLEFT(currentLocation) != -1):
+        if(len(moveForwardStack) > 4):
+            foundLEFT = False
+            for i in range(1,5):
+                i = i*-1
+                if(moveForwardStack[i] == getMazeLEFT(currentLocation)):
+                    foundLEFT = True
+                    break
             
-                    moveForwardStack.append(getMazeUP(currentLocation))
+            if(foundLEFT == False):
+                moveForwardStack.append(getMazeLEFT(currentLocation))
+                
+                
+                    
+
+
+
+
+
+        elif(len(moveForwardStack) > 1):
+            if(moveForwardStack[len(moveForwardStack)-1] != getMazeLEFT(currentLocation)):
+            
+                moveForwardStack.append(getMazeLEFT(currentLocation))
         elif(len(moveForwardStack) == 1):
-            if(moveForwardStack[len(moveForwardStack)-1] != getMazeUP(currentLocation)):
+            if(moveForwardStack[len(moveForwardStack)-1] != getMazeLEFT(currentLocation)):
             
-                moveForwardStack.append(getMazeUP(currentLocation))
+                moveForwardStack.append(getMazeLEFT(currentLocation))
         else:
             moveForwardStack.append(currentLocation)
 ##############################################################################################    
-        if(getMazeRIGHT(currentLocation) != lastLocation and getMazeRIGHT(currentLocation) != -1):
-            if(len(moveForwardStack) > 1):
-                if(moveForwardStack[len(moveForwardStack)-1] != getMazeUP(currentLocation)):
+#RIGHT
+    if(getMazeRIGHT(currentLocation) != lastLocation and getMazeRIGHT(currentLocation) != -1):
+        if(len(moveForwardStack) > 4):
+            foundRIGHT = False
+            for i in range(1,5):
+                i = i*-1
+                if(moveForwardStack[i] == getMazeRIGHT(currentLocation)):
+                    foundRIGHT = True
+                    break
             
-                    moveForwardStack.append(getMazeUP(currentLocation))
+            if(foundRIGHT == False):
+                moveForwardStack.append(getMazeRIGHT(currentLocation))
+                
+                
+                    
+
+
+
+
+
+        elif(len(moveForwardStack) > 1):
+            if(moveForwardStack[len(moveForwardStack)-1] != getMazeRIGHT(currentLocation)):
+            
+                moveForwardStack.append(getMazeRIGHT(currentLocation))
         elif(len(moveForwardStack) == 1):
-            if(moveForwardStack[len(moveForwardStack)-1] != getMazeUP(currentLocation)):
+            if(moveForwardStack[len(moveForwardStack)-1] != getMazeRIGHT(currentLocation)):
             
-                moveForwardStack.append(getMazeUP(currentLocation))
+                moveForwardStack.append(getMazeRIGHT(currentLocation))
         else:
             moveForwardStack.append(currentLocation)
  ##############################################################################################   
-        if(getMazeDOWN(currentLocation) != lastLocation and getMazeDOWN(currentLocation) != -1):
-            if(len(moveForwardStack) > 1):
-                if(moveForwardStack[len(moveForwardStack)-1] != getMazeUP(currentLocation)):
+#DOWN
+    if(getMazeDOWN(currentLocation) != lastLocation and getMazeDOWN(currentLocation) != -1):
+        if(len(moveForwardStack) > 4):
+            foundDOWN = False
+            for i in range(1,5):
+                i = i*-1
+                if(moveForwardStack[i] == getMazeDOWN(currentLocation)):
+                    foundDOWN = True
+                    break
             
-                    moveForwardStack.append(getMazeUP(currentLocation))
+            if(foundDOWN == False):
+                moveForwardStack.append(getMazeDOWN(currentLocation))
+                
+                
+                    
+
+
+
+
+
+        elif(len(moveForwardStack) > 1):
+            if(moveForwardStack[len(moveForwardStack)-1] != getMazeDOWN(currentLocation)):
+            
+                moveForwardStack.append(getMazeDOWN(currentLocation))
         elif(len(moveForwardStack) == 1):
-            if(moveForwardStack[len(moveForwardStack)-1] != getMazeUP(currentLocation)):
+            if(moveForwardStack[len(moveForwardStack)-1] != getMazeDOWN(currentLocation)):
             
-                moveForwardStack.append(getMazeUP(currentLocation))
+                moveForwardStack.append(getMazeDOWN(currentLocation))
         else:
             moveForwardStack.append(currentLocation)
+    
 #Send fake keys to system
 def fakeKeys():
     #Move up section
