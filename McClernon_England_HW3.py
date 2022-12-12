@@ -32,7 +32,7 @@ tiles = [
     0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
@@ -99,7 +99,7 @@ def getMazeLEFT(locationIndex):
 #TODO - get this correct
 def getMazeRIGHT(locationIndex):
     if(locationIndex % 20 != 19 and locationIndex!= 19):
-        locationIndex -= 1
+        locationIndex += 1
         if tiles[locationIndex] != 0:
             return(locationIndex)
     return(-1)
@@ -119,6 +119,8 @@ def getBestDirection(targetTileIndex, currentTileIndex):
     directionsList = [absoluteValDiffUP, absoluteValDiffDOWN, absoluteValDiffLEFT, absoluteValDiffRIGHT]
     print(directionsList)  
     bestChoice = min(directionsList)
+    print("Best choice value:", bestChoice)
+    print("Best choice index:", directionsList.index(bestChoice))
     if(directionsList.index(bestChoice) == 0):
         return "UP"
     elif(directionsList.index(bestChoice) == 1):
@@ -128,50 +130,6 @@ def getBestDirection(targetTileIndex, currentTileIndex):
     else:
         return "RIGHT"
     
-
-# def getBestDirection(targetTileIndex, currentTileIndex, lastTileIndex):
-#     absoluteValDiffUP = absoluteValDiffDOWN = absoluteValDiffLEFT = absoluteValDiffRIGHT = 999
-#     foundUP = foundDOWN = foundLEFT = foundRIGHT = False
-#     if(len(moveForwardStack) > 4):
-#         for i in range(1,5):
-#             i = i*-1
-#             if(moveForwardStack[i] == getMazeUP(currentTileIndex)):
-#                 foundUP = True
-#                 break
-#         for i in range(1,5):
-#             i = i*-1
-#             if(moveForwardStack[i] == getMazeDOWN(currentTileIndex)):
-#                 foundDOWN = True
-#                 break
-#         for i in range(1,5):
-#             i = i*-1
-#             if(moveForwardStack[i] == getMazeLEFT(currentTileIndex)):
-#                 foundLEFT = True
-#                 break
-#         for i in range(1,5):
-#             i = i*-1
-#             if(moveForwardStack[i] == getMazeRIGHT(currentTileIndex)):
-#                 foundRIGHT = True
-#                 break
-#     if (not foundUP):
-#         absoluteValDiffUP = abs(targetTileIndex - getMazeUP(currentTileIndex))
-#     if (not foundDOWN):
-#         absoluteValDiffDOWN = abs(targetTileIndex - getMazeDOWN(currentTileIndex))
-#     if (not foundLEFT):
-#         absoluteValDiffLEFT = abs(targetTileIndex - getMazeLEFT(currentTileIndex))
-#     if (not foundRIGHT):
-#         absoluteValDiffRIGHT = abs(targetTileIndex - getMazeRIGHT(currentTileIndex))
-
-#     directionsList = [absoluteValDiffUP, absoluteValDiffDOWN, absoluteValDiffLEFT, absoluteValDiffRIGHT]
-#     bestChoice = min(directionsList)
-#     if(directionsList.index(bestChoice) == 0):
-#         return "UP"
-#     elif(directionsList.index(bestChoice) == 1):
-#         return "DOWN"
-#     elif(directionsList.index(bestChoice) == 2):
-#         return "LEFT"
-#     else:
-#         return "RIGHT"
 
 
 #pac man starts at index 268
@@ -349,20 +307,6 @@ def valid(point):
 
     return point.x % 20 == 0 or point.y % 20 == 0
 
-# #TODO validPACMAN our func
-# def validPACMAN(point):
-#     """Return True if point is valid in tiles."""
-#     index = offset(point)
-
-#     if tiles[index] == 0 or tiles[index] == 3:
-#         return False
-
-#     index = offset(point + 19)
-
-#     if tiles[index] == 0 or tiles[index] == 3:
-#         return False
-
-#     return point.x % 20 == 0 or point.y % 20 == 0
 
 
 def world():
@@ -387,8 +331,18 @@ def world():
 
 def move():
     global lastTileVisted
-    if(len(lastTileVisted) >= 20):
+    # if(state.get('score') < 150):
+    #     if(len(lastTileVisted) >= 200):
+    #         lastTileVisted = []
+    #         # getRandomPosition()
+    # else:
+    #     if(len(lastTileVisted) >= 50):
+    #         lastTileVisted = []
+    #         # getRandomPosition()
+
+    if(len(lastTileVisted) >= 200):
         lastTileVisted = []
+        # getRandomPosition()
 
     print("new target node:", globalTargetNode)
     # print(moveForwardStack)
@@ -407,20 +361,30 @@ def move():
     index = offset(pacman)
     #timer??, for loop?? look at length of stack
     getAdjacentTiles(index, lastTile)
-    if globalTargetNode in moveForwardStack:        #This sees if we already hit the target node and will select another if we need to.
+    if globalTargetNode in lastTileVisted:        #This sees if we already hit the target node and will select another if we need to.
         getRandomPosition()
+        lastTileVisted = []
         print("JUST GOT RAND POS")
         print("new target node:", globalTargetNode)
     
-    match getBestDirection(globalTargetNode, index):
-        case "UP":
-            fakeKeys("UP")
-        case "DOWN":
-            fakeKeys("DOWN")
-        case "LEFT":
-            fakeKeys("LEFT")
-        case "RIGHT":
-            fakeKeys("RIGHT")
+    # match getBestDirection(globalTargetNode, index):
+    #     case "UP":
+    #         fakeKeys("UP")
+    #     case "DOWN":
+    #         fakeKeys("DOWN")
+    #     case "LEFT":
+    #         fakeKeys("LEFT")
+    #     case "RIGHT":
+    #         fakeKeys("RIGHT")
+
+    if(getBestDirection(globalTargetNode, index) == "UP"):
+        fakeKeys("UP")
+    elif(getBestDirection(globalTargetNode, index) == "DOWN"):
+        fakeKeys("DOWN")
+    elif(getBestDirection(globalTargetNode, index) == "LEFT"):
+        fakeKeys("LEFT")
+    else:
+        fakeKeys("RIGHT")
 
     if tiles[index] == 1:
         tiles[index] = 2
@@ -457,97 +421,12 @@ def move():
     # for point, course in ghosts:
     #     if abs(pacman - point) < 20:
     #         return
-    #fakeKeys()
+
+    print(lastTileVisted)
     ontimer(move, 50)
 
-# def moveGHOSTS():
-#     """Move pacman and all ghosts."""
-    
 
-#     #clear()
 
-    
-
-#     for point, course in ghosts:
-#         if valid(point + course):
-#             point.move(course)
-#         else:
-#             options = [
-#                 vector(5, 0),
-#                 vector(-5, 0),
-#                 vector(0, 5),
-#                 vector(0, -5),
-#             ]
-#             plan = choice(options)
-#             course.x = plan.x
-#             course.y = plan.y
-
-#         up()
-#         goto(point.x + 10, point.y + 10)
-#         dot(20, 'red')
-
-#     #update()
-
-#     # for point, course in ghosts:
-#     #     if abs(pacman - point) < 20:
-#     #         return
-
-#     #ontimer(moveGHOSTS, 100)
-
-#TODO - only pacman calls this, the ghosts don't
-# def movePACMAN():
-#     """Move pacman and all ghosts."""
-#     writer.undo()
-#     writer.write(state['score'])
-
-#     clear()
-    
-#     #PACMAN MOVEMENT
-#     if validPACMAN(pacman + aim):
-#         pacman.move(aim)
-
-#     index = offset(pacman)
-
-#     if tiles[index] == 1:
-#         tiles[index] = 2
-#         state['score'] += 1
-#         x = (index % 20) * 20 - 200
-#         y = 180 - (index // 20) * 20
-#         square(x, y)
-
-#     up()
-#     goto(pacman.x + 10, pacman.y + 10)
-#     dot(20, 'yellow')
-
-#     # for point, course in ghosts:
-#     #     if valid(point + course):
-#     #         point.move(course)
-#     #     else:
-#     #         options = [
-#     #             vector(5, 0),
-#     #             vector(-5, 0),
-#     #             vector(0, 5),
-#     #             vector(0, -5),
-#     #         ]
-#     #         plan = choice(options)
-#     #         course.x = plan.x
-#     #         course.y = plan.y
-
-#     #     up()
-#     #     goto(point.x + 10, point.y + 10)
-#     #     dot(20, 'red')
-
-#     moveGHOSTS()
-#     update()
-
-#     # #TODO - FINISH THIS, FIGURE OUT HOW TO SET TILE BACK TO 1 OR 2
-#     # for point, course in ghosts:
-#     #     index = offset(point)
-#     #     tiles[index] = 3
-#     #     if abs(pacman - point) < 20:
-#     #         return
-
-#     ontimer(movePACMAN, 50)
 
 #TODO - changed valid in this func
 def change(x, y):
@@ -569,14 +448,10 @@ onkey(lambda: change(-5, 0), 'Left')
 onkey(lambda: change(0, 5), 'Up')
 onkey(lambda: change(0, -5), 'Down')
 world()
-#move()
 getRandomPosition() #Gets initial random position for pacman
 print("target node:", globalTargetNode)
 move()
 done()
-
-#moves left by itself
-#change(-5, 0)
 
 
     
