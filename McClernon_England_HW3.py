@@ -8,6 +8,7 @@ Exercises
 """
 import keyboard
 from random import choice
+import random
 from turtle import *
 
 from freegames import floor, vector
@@ -52,6 +53,25 @@ tiles = [
 moveForwardStack = []
 backtrackList = []
 lastTileVisted = []
+globalTargetNode = 0
+
+def getRandomPosition():
+    randIndex = random.randrange(len(tiles))
+    loopBool = True
+    while(loopBool):
+        if(tiles[randIndex] == 1):
+            loopBool = False
+            global globalTargetNode
+            globalTargetNode = randIndex
+            return globalTargetNode
+        else:
+            loopBool = True
+            if randIndex >= 399:
+                randIndex = 0
+            randIndex += 1
+
+
+    
 
 def getMazeUP(locationIndex):
     if(locationIndex >= 20):
@@ -83,6 +103,77 @@ def getMazeRIGHT(locationIndex):
         if tiles[locationIndex] != 0:
             return(locationIndex)
     return(-1)
+
+#TODO almost never goes right, not sure why but gotta fix this
+def getBestDirection(targetTileIndex, currentTileIndex):
+    absoluteValDiffUP = absoluteValDiffDOWN = absoluteValDiffLEFT = absoluteValDiffRIGHT = 999
+    if (getMazeUP(currentTileIndex) != -1 and getMazeUP(currentTileIndex) not in lastTileVisted):
+        absoluteValDiffUP = abs(targetTileIndex - getMazeUP(currentTileIndex))
+    if (getMazeDOWN(currentTileIndex) != -1 and getMazeDOWN(currentTileIndex) not in lastTileVisted):
+        absoluteValDiffDOWN = abs(targetTileIndex - getMazeDOWN(currentTileIndex))
+    if (getMazeLEFT(currentTileIndex) != -1 and getMazeLEFT(currentTileIndex) not in lastTileVisted):
+        absoluteValDiffLEFT = abs(targetTileIndex - getMazeLEFT(currentTileIndex))
+    if (getMazeRIGHT(currentTileIndex) != -1 and getMazeRIGHT(currentTileIndex) not in lastTileVisted):
+        absoluteValDiffRIGHT = abs(targetTileIndex - getMazeRIGHT(currentTileIndex))
+
+    directionsList = [absoluteValDiffUP, absoluteValDiffDOWN, absoluteValDiffLEFT, absoluteValDiffRIGHT]
+    print(directionsList)  
+    bestChoice = min(directionsList)
+    if(directionsList.index(bestChoice) == 0):
+        return "UP"
+    elif(directionsList.index(bestChoice) == 1):
+        return "DOWN"
+    elif(directionsList.index(bestChoice) == 2):
+        return "LEFT"
+    else:
+        return "RIGHT"
+    
+
+# def getBestDirection(targetTileIndex, currentTileIndex, lastTileIndex):
+#     absoluteValDiffUP = absoluteValDiffDOWN = absoluteValDiffLEFT = absoluteValDiffRIGHT = 999
+#     foundUP = foundDOWN = foundLEFT = foundRIGHT = False
+#     if(len(moveForwardStack) > 4):
+#         for i in range(1,5):
+#             i = i*-1
+#             if(moveForwardStack[i] == getMazeUP(currentTileIndex)):
+#                 foundUP = True
+#                 break
+#         for i in range(1,5):
+#             i = i*-1
+#             if(moveForwardStack[i] == getMazeDOWN(currentTileIndex)):
+#                 foundDOWN = True
+#                 break
+#         for i in range(1,5):
+#             i = i*-1
+#             if(moveForwardStack[i] == getMazeLEFT(currentTileIndex)):
+#                 foundLEFT = True
+#                 break
+#         for i in range(1,5):
+#             i = i*-1
+#             if(moveForwardStack[i] == getMazeRIGHT(currentTileIndex)):
+#                 foundRIGHT = True
+#                 break
+#     if (not foundUP):
+#         absoluteValDiffUP = abs(targetTileIndex - getMazeUP(currentTileIndex))
+#     if (not foundDOWN):
+#         absoluteValDiffDOWN = abs(targetTileIndex - getMazeDOWN(currentTileIndex))
+#     if (not foundLEFT):
+#         absoluteValDiffLEFT = abs(targetTileIndex - getMazeLEFT(currentTileIndex))
+#     if (not foundRIGHT):
+#         absoluteValDiffRIGHT = abs(targetTileIndex - getMazeRIGHT(currentTileIndex))
+
+#     directionsList = [absoluteValDiffUP, absoluteValDiffDOWN, absoluteValDiffLEFT, absoluteValDiffRIGHT]
+#     bestChoice = min(directionsList)
+#     if(directionsList.index(bestChoice) == 0):
+#         return "UP"
+#     elif(directionsList.index(bestChoice) == 1):
+#         return "DOWN"
+#     elif(directionsList.index(bestChoice) == 2):
+#         return "LEFT"
+#     else:
+#         return "RIGHT"
+
+
 #pac man starts at index 268
 def getAdjacentTiles(currentLocation, lastLocation):
     if(getMazeUP(currentLocation) != lastLocation and getMazeUP(currentLocation) != -1):
@@ -209,10 +300,17 @@ def getAdjacentTiles(currentLocation, lastLocation):
             moveForwardStack.append(currentLocation)
     
 #Send fake keys to system
-def fakeKeys():
+def fakeKeys(directionSTR):
     #Move up section
-    keyboard.press_and_release('left')
-    pass
+    if(directionSTR == "UP"):
+        keyboard.press_and_release('up')
+    elif(directionSTR == "DOWN"):
+        keyboard.press_and_release('down')
+    elif(directionSTR == "LEFT"):
+        keyboard.press_and_release('left')
+    else:
+        keyboard.press_and_release('right')
+
 
 
 def square(x, y):
@@ -288,7 +386,12 @@ def world():
 
 
 def move():
-    print(moveForwardStack)
+    global lastTileVisted
+    if(len(lastTileVisted) >= 20):
+        lastTileVisted = []
+
+    print("new target node:", globalTargetNode)
+    # print(moveForwardStack)
     """Move pacman and all ghosts."""
     writer.undo()
     writer.write(state['score'])
@@ -304,6 +407,21 @@ def move():
     index = offset(pacman)
     #timer??, for loop?? look at length of stack
     getAdjacentTiles(index, lastTile)
+    if globalTargetNode in moveForwardStack:        #This sees if we already hit the target node and will select another if we need to.
+        getRandomPosition()
+        print("JUST GOT RAND POS")
+        print("new target node:", globalTargetNode)
+    
+    match getBestDirection(globalTargetNode, index):
+        case "UP":
+            fakeKeys("UP")
+        case "DOWN":
+            fakeKeys("DOWN")
+        case "LEFT":
+            fakeKeys("LEFT")
+        case "RIGHT":
+            fakeKeys("RIGHT")
+
     if tiles[index] == 1:
         tiles[index] = 2
         state['score'] += 1
@@ -315,29 +433,30 @@ def move():
     goto(pacman.x + 10, pacman.y + 10)
     dot(20, 'yellow')
 
-    for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
-        else:
-            options = [
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
-            ]
-            plan = choice(options)
-            course.x = plan.x
-            course.y = plan.y
+    #GHOSTS- add this back when we want them
+    # for point, course in ghosts:
+    #     if valid(point + course):
+    #         point.move(course)
+    #     else:
+    #         options = [
+    #             vector(5, 0),
+    #             vector(-5, 0),
+    #             vector(0, 5),
+    #             vector(0, -5),
+    #         ]
+    #         plan = choice(options)
+    #         course.x = plan.x
+    #         course.y = plan.y
 
-        up()
-        goto(point.x + 10, point.y + 10)
-        dot(20, 'red')
+    #     up()
+    #     goto(point.x + 10, point.y + 10)
+    #     dot(20, 'red')
 
     update()
 
-    for point, course in ghosts:
-        if abs(pacman - point) < 20:
-            return
+    # for point, course in ghosts:
+    #     if abs(pacman - point) < 20:
+    #         return
     #fakeKeys()
     ontimer(move, 50)
 
@@ -451,6 +570,8 @@ onkey(lambda: change(0, 5), 'Up')
 onkey(lambda: change(0, -5), 'Down')
 world()
 #move()
+getRandomPosition() #Gets initial random position for pacman
+print("target node:", globalTargetNode)
 move()
 done()
 
