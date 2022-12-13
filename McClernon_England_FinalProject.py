@@ -1,18 +1,21 @@
-"""Pacman, classic arcade game.
-Exercises
-1. Change the board.
-2. Change the number of ghosts.
-3. Change where pacman starts.
-4. Make the ghosts faster/slower.
-5. Make the ghosts smarter.
-"""
+#---------------------------------------------------------------------------------------------------
+#Authors    : Jason England & Tommy McClernon
+#Date Due   : December 12th, 2022
+#Description: This program takes will run a simplistic version of Pac-Man which was taken
+#             from the "Freegames" library and will have our Informed best-first search algorithm
+#             find the best path for Pac-man to take in order to get to its randomly selected
+#             target pellet.
+#    Freegames - https://grantjenks.com/docs/freegames/pacman.html
+#---------------------------------------------------------------------------------------------------
+
+#import section
 import keyboard
 from random import choice
 import random
 from turtle import *
-
 from freegames import floor, vector
 
+#Important Vars
 state = {'score': 0}
 path = Turtle(visible=False)
 writer = Turtle(visible=False)
@@ -24,6 +27,13 @@ ghosts = [
     [vector(100, 160), vector(0, -5)],
     [vector(100, -160), vector(-5, 0)],
 ]
+
+moveForwardStack = []
+backtrackList = []
+lastTileVisted = []
+globalTargetNode = 0
+
+#Pac-man starting map
 # fmt: off
 # 20 x 20 Array
 tiles = [
@@ -50,11 +60,8 @@ tiles = [
 ]
 # fmt: on
 
-moveForwardStack = []
-backtrackList = []
-lastTileVisted = []
-globalTargetNode = 0
 
+#This function will randomly select the index of a tile that still has a pellet and will return the index of that tile.
 def getRandomPosition():
     randIndex = random.randrange(len(tiles))
     loopBool = True
@@ -72,7 +79,7 @@ def getRandomPosition():
 
 
     
-
+#This function will get and return the index of the tile that is adjacent to Pac-man in the UP direction.
 def getMazeUP(locationIndex):
     if(locationIndex >= 20):
         locationIndex -= 20
@@ -80,7 +87,7 @@ def getMazeUP(locationIndex):
             return(locationIndex)
     return(-1)
 
-#TODO - get this correct
+#This function will get and return the index of the tile that is adjacent to Pac-man in the DOWN direction.
 def getMazeDOWN(locationIndex):
     if(locationIndex <= 379):
         locationIndex += 20
@@ -88,7 +95,7 @@ def getMazeDOWN(locationIndex):
             return(locationIndex)
     return(-1)
 
-#TODO - get this correct
+#This function will get and return the index of the tile that is adjacent to Pac-man in the LEFT direction.
 def getMazeLEFT(locationIndex):
     if(locationIndex %20 != 0 and locationIndex != 0):
         locationIndex -= 1
@@ -96,7 +103,7 @@ def getMazeLEFT(locationIndex):
             return(locationIndex)
     return(-1)
 
-#TODO - get this correct
+#This function will get and return the index of the tile that is adjacent to Pac-man in the RIGHT direction.
 def getMazeRIGHT(locationIndex):
     if(locationIndex % 20 != 19 and locationIndex!= 19):
         locationIndex += 1
@@ -104,7 +111,7 @@ def getMazeRIGHT(locationIndex):
             return(locationIndex)
     return(-1)
 
-#TODO almost never goes right, not sure why but gotta fix this
+#This function will calculate the hueristic (SLD) of each tile adjacent to Pac-man. The direction with the lowest heuristic will return a string saying the direction that Pac-man should go.
 def getBestDirection(targetTileIndex, currentTileIndex):
     absoluteValDiffUP = absoluteValDiffDOWN = absoluteValDiffLEFT = absoluteValDiffRIGHT = 999
     if (getMazeUP(currentTileIndex) != -1 and getMazeUP(currentTileIndex) not in lastTileVisted):
@@ -132,7 +139,7 @@ def getBestDirection(targetTileIndex, currentTileIndex):
     
 
 
-#pac man starts at index 268
+#This function will get the adjacent tiles of Pac-man and put them onto the moveForward stack.
 def getAdjacentTiles(currentLocation, lastLocation):
     if(getMazeUP(currentLocation) != lastLocation and getMazeUP(currentLocation) != -1):
         if(len(moveForwardStack) > 4):
@@ -142,17 +149,8 @@ def getAdjacentTiles(currentLocation, lastLocation):
                 if(moveForwardStack[i] == getMazeUP(currentLocation)):
                     foundUP = True
                     break
-            
             if(foundUP == False):
-                moveForwardStack.append(getMazeUP(currentLocation))
-                
-                
-                    
-
-
-
-
-
+                moveForwardStack.append(getMazeUP(currentLocation))     
         elif(len(moveForwardStack) > 1):
             if(moveForwardStack[len(moveForwardStack)-1] != getMazeUP(currentLocation)):
             
@@ -173,17 +171,8 @@ def getAdjacentTiles(currentLocation, lastLocation):
                 if(moveForwardStack[i] == getMazeLEFT(currentLocation)):
                     foundLEFT = True
                     break
-            
             if(foundLEFT == False):
                 moveForwardStack.append(getMazeLEFT(currentLocation))
-                
-                
-                    
-
-
-
-
-
         elif(len(moveForwardStack) > 1):
             if(moveForwardStack[len(moveForwardStack)-1] != getMazeLEFT(currentLocation)):
             
@@ -204,17 +193,8 @@ def getAdjacentTiles(currentLocation, lastLocation):
                 if(moveForwardStack[i] == getMazeRIGHT(currentLocation)):
                     foundRIGHT = True
                     break
-            
             if(foundRIGHT == False):
                 moveForwardStack.append(getMazeRIGHT(currentLocation))
-                
-                
-                    
-
-
-
-
-
         elif(len(moveForwardStack) > 1):
             if(moveForwardStack[len(moveForwardStack)-1] != getMazeRIGHT(currentLocation)):
             
@@ -235,17 +215,8 @@ def getAdjacentTiles(currentLocation, lastLocation):
                 if(moveForwardStack[i] == getMazeDOWN(currentLocation)):
                     foundDOWN = True
                     break
-            
             if(foundDOWN == False):
                 moveForwardStack.append(getMazeDOWN(currentLocation))
-                
-                
-                    
-
-
-
-
-
         elif(len(moveForwardStack) > 1):
             if(moveForwardStack[len(moveForwardStack)-1] != getMazeDOWN(currentLocation)):
             
@@ -256,8 +227,9 @@ def getAdjacentTiles(currentLocation, lastLocation):
                 moveForwardStack.append(getMazeDOWN(currentLocation))
         else:
             moveForwardStack.append(currentLocation)
-    
-#Send fake keys to system
+
+
+#This function will send out fake key signals when it is passed in a specific desired direction.
 def fakeKeys(directionSTR):
     #Move up section
     if(directionSTR == "UP"):
@@ -270,7 +242,7 @@ def fakeKeys(directionSTR):
         keyboard.press_and_release('right')
 
 
-
+#Part of original code
 def square(x, y):
     """Draw square using path at (x, y)."""
     path.up()
@@ -284,7 +256,7 @@ def square(x, y):
 
     path.end_fill()
 
-
+#Part of original code
 def offset(point):
     """Return offset of point in tiles."""
     x = (floor(point.x, 20) + 200) / 20
@@ -292,11 +264,10 @@ def offset(point):
     index = int(x + y * 20)
     return index
 
-
+#Part of original code
 def valid(point):
     """Return True if point is valid in tiles."""
     index = offset(point)
-    #print("printing index",index)
     if tiles[index] == 0:
         return False
 
@@ -308,7 +279,7 @@ def valid(point):
     return point.x % 20 == 0 or point.y % 20 == 0
 
 
-
+#Part of original code
 def world():
     """Draw world using path."""
     bgcolor('black')
@@ -328,24 +299,17 @@ def world():
                 path.dot(2, 'white')
 
 
-
+#Part of original code - main game loop that moves Pac-man and the ghosts.
 def move():
     global lastTileVisted
-    # if(state.get('score') < 150):
-    #     if(len(lastTileVisted) >= 200):
-    #         lastTileVisted = []
-    #         # getRandomPosition()
-    # else:
-    #     if(len(lastTileVisted) >= 50):
-    #         lastTileVisted = []
-    #         # getRandomPosition()
-
-    if(len(lastTileVisted) >= 200):
+    #Wipes the memory of Pac-man and gets a new target node after a certain length
+    if(len(lastTileVisted) >= 120):
         lastTileVisted = []
-        # getRandomPosition()
+        getRandomPosition()
 
-    print("new target node:", globalTargetNode)
-    # print(moveForwardStack)
+    #DEBUG PRINT
+    print("target node:", globalTargetNode)
+
     """Move pacman and all ghosts."""
     writer.undo()
     writer.write(state['score'])
@@ -354,29 +318,23 @@ def move():
     index = offset(pacman)
     lastTile = index
     lastTileVisted.append(lastTile)
-    #TODO limit append to one per tile 
     if valid(pacman + aim):
         pacman.move(aim)
 
     index = offset(pacman)
-    #timer??, for loop?? look at length of stack
+
+    #Gets the adjacent tiles
     getAdjacentTiles(index, lastTile)
-    if globalTargetNode in lastTileVisted:        #This sees if we already hit the target node and will select another if we need to.
+
+    #This will check and see if we already hit the target node. If we have, then it will select another target node and it will clear Pac-man's recent tile memory.
+    if globalTargetNode in lastTileVisted:
         getRandomPosition()
         lastTileVisted = []
         print("JUST GOT RAND POS")
         print("new target node:", globalTargetNode)
     
-    # match getBestDirection(globalTargetNode, index):
-    #     case "UP":
-    #         fakeKeys("UP")
-    #     case "DOWN":
-    #         fakeKeys("DOWN")
-    #     case "LEFT":
-    #         fakeKeys("LEFT")
-    #     case "RIGHT":
-    #         fakeKeys("RIGHT")
 
+    #This will send the keyboard keys based on which direction was determined to be the best one for Pac-man to go.
     if(getBestDirection(globalTargetNode, index) == "UP"):
         fakeKeys("UP")
     elif(getBestDirection(globalTargetNode, index) == "DOWN"):
@@ -386,6 +344,7 @@ def move():
     else:
         fakeKeys("RIGHT")
 
+    #Removes the pellet if Pac-man is on this tile.
     if tiles[index] == 1:
         tiles[index] = 2
         state['score'] += 1
@@ -418,24 +377,28 @@ def move():
 
     update()
 
+    #ALSO GHOSTS
     # for point, course in ghosts:
     #     if abs(pacman - point) < 20:
     #         return
 
+    #DEBUG PRINT
     print(lastTileVisted)
+
+    #Loops the function every 50ms (20FPS)
     ontimer(move, 50)
 
 
 
 
-#TODO - changed valid in this func
+#Part of original code
 def change(x, y):
     """Change pacman aim if valid."""
     if valid(pacman + vector(x, y)):
         aim.x = x
         aim.y = y
 
-
+#Setup and running the game
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
@@ -449,12 +412,6 @@ onkey(lambda: change(0, 5), 'Up')
 onkey(lambda: change(0, -5), 'Down')
 world()
 getRandomPosition() #Gets initial random position for pacman
-print("target node:", globalTargetNode)
+print("target node:", globalTargetNode) #DEBUG PRINT
 move()
 done()
-
-
-    
-
-
-
